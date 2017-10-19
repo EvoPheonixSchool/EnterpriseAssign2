@@ -11,8 +11,16 @@ import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 
 // imports as needed
+
+/**
+ * Class provided by Stan Pieda
+ * modified by Sheldon McGrath
+ *
+ * This class is a client application for sending cabbages to a server
+ */
 public class CabbageClient {
 /* 
  * code here please 
@@ -31,8 +39,12 @@ public class CabbageClient {
     Date date = new Date();
 
     private Cabbage cabbage;
-    private Message capsle;
+    private Message capsle = new Message(null);
 
+    /**
+     * Main method, takes arguments for an ip and port number
+     * @param args
+     */
     public static void main(String[] args) {
         switch (args.length){
             case 2:
@@ -46,62 +58,96 @@ public class CabbageClient {
         }
 
     }
+
+    /**
+     * Constructor takes an ip and port number
+     * @param serverName ip of server
+     * @param portNum port number
+     */
     public CabbageClient(String serverName, int portNum){
         this.serverName = serverName;
         this.portNum = portNum;
     }
+
+    /**
+     * main logic for client
+     *
+     * Creates connection to server
+     * gets input for cabbage
+     * creates cabbage object
+     * sends cabbage in message object
+     */
     public void runClient(){
-        String myHostName = null;
+        //String myHostName = null;
         try {
             InetAddress myHost = Inet4Address.getLocalHost();
-            myHostName = myHost.getHostName();
+            //myHostName = myHost.getHostName();
         } catch (UnknownHostException e1) {
             e1.printStackTrace();
         }
         try {
+            //creates connteion to server from given ip and port
             connection = new Socket(InetAddress.getByName(serverName), portNum);
             output = new ObjectOutputStream (connection.getOutputStream());
             input = new ObjectInputStream( connection.getInputStream());
+            System.out.println("Sheldon McGrath " + dateFormat.format(date));
             do {
-                cabbage = new Cabbage();
-                System.out.println("Sheldon McGrath " + dateFormat.format(date));
-                System.out.print("Create a new cabbage.\nEnter Alpha: \n");
-                alpha = br.readLine();
-                cabbage.setAlpha(alpha);
-                System.out.println("Enter Beta: ");
-                beta = br.readLine();
-                cabbage.setBeta(beta);
-                System.out.println("Enter Charlie: ");
-                charlie = br.readLine();
-                cabbage.setCharlie(charlie);
-                System.out.println("Enter Delta: ");
-                delta = br.readLine();
-                cabbage.setDelta(delta);
-                System.out.println("Enter line number: ");
-                lineno = Integer.parseInt(br.readLine());
-                cabbage.setLineNumber(lineno);
-                System.out.println(lineno);
 
-                capsle = new Message("Insert",cabbage);
+                //ask to continue
+                System.out.print("Create a new cabbage(y/n):");
+                if(br.readLine().equalsIgnoreCase("n")){
+                    capsle.setCommand("disconnect");
+                }else {
+                    //get info for new cabbage
+                    cabbage = new Cabbage();
+                    System.out.println("Alpha: ");
+                    alpha = br.readLine();
+                    cabbage.setAlpha(alpha);
+                    System.out.println("Enter Beta: ");
+                    beta = br.readLine();
+                    cabbage.setBeta(beta);
+                    System.out.println("Enter Charlie: ");
+                    charlie = br.readLine();
+                    cabbage.setCharlie(charlie);
+                    System.out.println("Enter Delta: ");
+                    delta = br.readLine();
+                    cabbage.setDelta(delta);
+                    System.out.println("Enter line number: ");
+                    lineno = Integer.parseInt(br.readLine());
+                    cabbage.setLineNumber(lineno);
+                    System.out.println(lineno);
+                    UUID uuid = UUID.randomUUID();
+                    cabbage.setUUID(uuid.toString());
+
+                    //create message object
+                    capsle.setCommand("insert");
+                    capsle.setCabbage(cabbage);
+
+                }
+                //send cabbage to server
                 output.writeObject(capsle);
                 output.flush();
+
+                //get message back from server
                 capsle = (Message) input.readObject();
+                //System.out.println(capsle.getCommand());
 
-                cabbage = capsle.getCabbage();
+                //read message from server
                 switch(capsle.getCommand()){
-                    case "success":
+                    case "Success":
+                        cabbage = capsle.getCabbage();
                         System.out.println("Cabbage has successfully been entered.");
-                        System.out.println("alpha: " + cabbage);
+                        System.out.println("Cabbage: " + cabbage + "\n");
                         break;
-                    case "failure":
-
+                    case "fail":
+                        System.out.println("An error has occurred");
                         break;
                     case "disconnect":
-
+                        System.out.println("Disconnecting from server");
                         break;
                 }
 
-            } while (capsle.getCommand() == "success");
+            } while (! capsle.getCommand().equalsIgnoreCase("disconnect"));
         } catch (IOException exception) {
             System.out.println(exception.getMessage());
             exception.printStackTrace();

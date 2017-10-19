@@ -12,12 +12,19 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+/**creates the connection to the database for the server
+ * Class provided by Stan Pieda
+ */
 public class DataSource {
 	private Connection con = null;
 	private final String connectionString = "jdbc:mysql://localhost/assignment2";
 	private final String username = "assignment2";
 	private final String password = "password";
 
+	/**
+	 * main logic, creating the connection to the database for the server
+	 * @return
+	 */
 	public Connection getConnection(){
 		try {
 		if(con != null){

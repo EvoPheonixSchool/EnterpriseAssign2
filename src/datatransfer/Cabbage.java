@@ -12,6 +12,10 @@ package datatransfer;
 
 import java.io.Serializable;
 
+/**
+ * Class to hold data about cabbages
+ * Class provided by Stan Pieda
+ */
 public class Cabbage implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private Integer id;
@@ -21,11 +25,23 @@ public class Cabbage implements Serializable{
 	private String charlie;
 	private String delta;
 	private String uuid;
-	
+
+	/**
+	 * Default constructor
+	 */
 	public Cabbage() {
 		this(0,0,"","","","");
 	}
-	
+
+	/**
+	 * sets all data of object from given values
+	 * @param id
+	 * @param lineNumber
+	 * @param alpha
+	 * @param beta
+	 * @param charlie
+	 * @param delta
+	 */
 	public Cabbage(Integer id, int lineNumber, String alpha, String beta, String charlie, String delta) {
 		this.id = id;
 		this.lineNumber = lineNumber;

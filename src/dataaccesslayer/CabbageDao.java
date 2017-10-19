@@ -21,7 +21,7 @@ public interface CabbageDao {
 	// List<Cabbage> getAllTasks();
 	// Cabbage getCabbageById(int taskId);
 	Cabbage getCabbageByUUID(String uuid);
-	void insertCabbage(Cabbage cabbage);
+	String insertCabbage(Cabbage cabbage);
 	// void updateCabbage(Cabbage task);
 	// void deleteCabbage(Cabbage task);
 }

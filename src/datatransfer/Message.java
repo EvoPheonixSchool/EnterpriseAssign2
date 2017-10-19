@@ -3,6 +3,12 @@ package datatransfer;
 import java.io.Serializable;
 
 // imports as needed
+
+/**
+ * creates a serialized object to send cabbages
+ * Class provided by Stan Pieda
+ * Modified by Sheldon McGrath
+ */
 public class Message implements Serializable{
 /* 
  * code here please 
@@ -11,10 +17,19 @@ public class Message implements Serializable{
     private String command;
     private Cabbage cabbage;
 
+    /**
+     * Constructor to set command
+     * @param command command to be sent between client and server
+     */
     public Message(String command){
         this.command = command;
     }
 
+    /**
+     * constructor to set all values
+     * @param command command to be sent between client and server
+     * @param cabbage
+     */
     public Message(String command, Cabbage cabbage){
         this.command = command;
         this.cabbage = cabbage;
