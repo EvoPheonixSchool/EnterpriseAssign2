@@ -78,6 +78,7 @@ public class CabbageClient {
      * sends cabbage in message object
      */
     public void runClient(){
+        boolean end = false;
         //String myHostName = null;
         try {
             InetAddress myHost = Inet4Address.getLocalHost();
@@ -97,6 +98,7 @@ public class CabbageClient {
                 System.out.print("Create a new cabbage(y/n):");
                 if(br.readLine().equalsIgnoreCase("n")){
                     capsle.setCommand("disconnect");
+                    end = true;
                 }else {
                     //get info for new cabbage
                     cabbage = new Cabbage();
@@ -140,20 +142,32 @@ public class CabbageClient {
                         System.out.println("Cabbage: " + cabbage + "\n");
                         break;
                     case "fail":
-                        System.out.println("An error has occurred");
+                        System.out.println("An error has occurred, disconnecting");
+                        end = true;
                         break;
                     case "disconnect":
                         System.out.println("Disconnecting from server");
+                        end = true;
                         break;
                 }
 
-            } while (! capsle.getCommand().equalsIgnoreCase("disconnect"));
+            } while (end == false);
         } catch (IOException exception) {
             System.out.println(exception.getMessage());
+
             exception.printStackTrace();
         }catch (ClassNotFoundException exception) {
             System.out.println(exception.getMessage());
             exception.printStackTrace();
+        }catch(NumberFormatException e){
+            capsle.setCommand("error");
+            System.out.println("Invalid input, Disconnected from server.");
+            try {
+                output.writeObject(capsle);
+                output.flush();
+            } catch (IOException ex) {
+                e.printStackTrace();
+            }
         }
         finally{
             try{if(input != null){input.close();}}catch(IOException ex){

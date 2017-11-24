@@ -67,6 +67,7 @@ public class CabbageServer {
                 ObjectInputStream input = null;
                 Message message = null;
                 String pass,uuid;
+                boolean end = false;
 
                 //String message = "";
                 System.out.println("Got a connection");
@@ -84,6 +85,13 @@ public class CabbageServer {
                     if(message.getCommand().equalsIgnoreCase("disconnect")){
                         System.out.println("Disconnecting from client");
                         message.setCommand("disconnect");
+                        output.writeObject(message);
+                        output.flush();
+                        System.out.println(remote + " disconnected via request");
+                        end = true;
+                    }else if(message.getCommand().equalsIgnoreCase("error")){
+                        System.out.println(remote + " disconnected via error");
+                        end = true;
                     }else {
                         //insert cabbage into database
                         CabbageDaoImpl cabDao = new CabbageDaoImpl();
@@ -106,22 +114,18 @@ public class CabbageServer {
                             System.out.println("Cabbage has been added");
                         }else{
                             message.setCommand("fail");
+                            System.out.println("An error has occurred, disconnecting with " + remote);
+                            end = true;
                         }
-                    }
-                    //send message back to client
                         output.writeObject(message);
                         output.flush();
-                    } while (!message.getCommand().equalsIgnoreCase("disconnect"));
-                    System.out.println(remote + " disconnected via request");
+                    }
+                    //send message back to client
+
+                    } while (end == false);
                 } catch (IOException exception) {
                     System.err.println(exception.getMessage());
                     exception.printStackTrace();
-                    message.setCommand("fail");
-                    try {
-                        output.writeObject(message);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
                 }catch (ClassNotFoundException exception) {
                     System.out.println(exception.getMessage());
                     exception.printStackTrace();
